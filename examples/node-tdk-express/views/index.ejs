@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="width:65%;margin: 0 auto;text-align: center">
+        <input type="text" name="word" placeholder="Kelime ara">
+        <button class="ara">Ara</button>
+    </div>
+    <div class="result" style="width:65%;margin: 0 auto;"></div>
+    <script>
+        (async () => {
+            document.querySelector("button.ara").addEventListener("click", async function () {
+                const rawResponse = await fetch('/api/' + document.querySelector("input[name='word']").value, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                document.querySelector(".result").innerHTML = "";
+                const content = await rawResponse.json();
+                const title = document.createElement("h1");
+                title.classList.add("title")
+                title.textContent = content.word
+                document.querySelector(".result").appendChild(title)
+                if (Array.isArray(content.meaning)) {
+                    const ul = document.createElement("ul");
+                    for (let i in content.meaning) {
+                        let li = document.createElement("li");
+                        li.textContent = content.meaning[i]
+                        ul.appendChild(li)
+                    }
+                    document.querySelector(".result").appendChild(ul)
+                } else {
+                    const p = document.createElement("p")
+                    p.textContent = content.meaning;
+                    document.querySelector(".result").appendChild(p)
+                }
+            })
+        })();
+    </script>
+</body>
+
+</html>
